@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <!-- Video Player -->
+                <div class="bg-black rounded-lg mb-6 aspect-video flex items-center justify-center">
+                    {% if lesson.video_url %}
+                        <video controls class="w-full h-full">
+                            <source src="{{ lesson.video_url }}" type="video/mp4">
+                        </video>
+                    {% else %}
+                        <div class="text-white text-center">
+                            <i class="fas fa-video text-6xl mb-4"></i>
+                            <p>Video content coming soon</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Lesson Info -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">{{ lesson.title }}</h1>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">{{ lesson.description }}</p>
+                    
+                    <!-- Mark Complete Button -->
+                    {% if not progress.is_completed %}
+                        <form method="POST" action="{% url 'mark_lesson_complete' course.slug lesson.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-check mr-2"></i>Mark as Complete
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="flex items-center text-green-600">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>Completed</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between">
+                    {% if prev_lesson %}
+                        <a href="{% url 'lesson_detail' course.slug prev_lesson.id %}" class="btn-outline">
+                            <i class="fas fa-arrow-left mr-2"></i>Previous Lesson
+                        </a>
+                    {% else %}
+                        <div></div>
+                    {% endif %}
+                    
+                    {% if next_lesson %}
+                        <a href="{% url 'lesson_detail' course.slug next_lesson.id %}" class="btn-primary">
+                            Next Lesson<i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'course_detail' course.slug %}" class="btn-primary">
+                            Back to Course
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar - Lesson List -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sticky top-4">
+                    <h3 class="font-bold mb-4 text-gray-900 dark:text-white">Course Content</h3>
+                    <div class="space-y-2 max-h-96 overflow-y-auto">
+                        {% for l in lessons %}
+                            <a href="{% url 'lesson_detail' course.slug l.id %}" 
+                               class="block p-2 rounded {% if l.id == lesson.id %}bg-primary-100 dark:bg-primary-900{% else %}hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm {% if l.id == lesson.id %}text-primary-600 font-semibold{% else %}text-gray-700 dark:text-gray-300{% endif %}">
+                                        {{ l.title }}
+                                    </span>
+                                    <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

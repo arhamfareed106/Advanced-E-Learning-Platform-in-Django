@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Catalog - E-Learning Platform{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Header -->
+    <div class="bg-gradient-hero py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold text-white mb-4">Explore Courses</h1>
+            <p class="text-xl text-gray-100">Discover your next learning adventure</p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Search and Filters -->
+        <div class="mb-8">
+            <form method="GET" class="space-y-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Search courses..." 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <select name="category" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <select name="difficulty" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if selected_difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                    
+                    <select name="is_free" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="">All Prices</option>
+                        <option value="true" {% if is_free_filter == 'true' %}selected{% endif %}>Free Only</option>
+                    </select>
+                    
+                    <select name="sort" class="px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="-created_at" {% if sort_by == '-created_at' %}selected{% endif %}>Newest</option>
+                        <option value="-average_rating" {% if sort_by == '-average_rating' %}selected{% endif %}>Highest Rated</option>
+                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="-price" {% if sort_by == '-price' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Course Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for course in page_obj %}
+                <div class="card-hover">
+                    <div class="w-full h-48 bg-gradient-primary rounded-lg mb-4"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="badge-primary">{{ course.category.name }}</span>
+                        <div class="flex items-center text-yellow-500">
+                            <i class="fas fa-star mr-1"></i>
+                            <span class="font-semibold">{{ course.average_rating|floatformat:1 }}</span>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">{{ course.title }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{{ course.description }}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-primary-600">
+                            {% if course.is_free %}Free{% else %}\${{ course.price }}{% endif %}
+                        </span>
+                        <a href="{% url 'course_detail' course.slug %}" class="btn-primary text-sm">
+                            View Course
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-span-3 text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-xl text-gray-500">No courses found</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="inline-flex rounded-md shadow">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

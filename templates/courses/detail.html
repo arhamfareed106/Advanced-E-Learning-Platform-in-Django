@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - E-Learning Platform{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Course Header -->
+    <div class="bg-gradient-hero py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="badge-primary">{{ course.category.name }}</span>
+                <span class="badge-secondary">{{ course.get_difficulty_display }}</span>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-4">{{ course.title }}</h1>
+            <p class="text-xl text-gray-100 mb-6">{{ course.short_description }}</p>
+            <div class="flex items-center gap-6 text-white">
+                <div class="flex items-center">
+                    <i class="fas fa-star text-yellow-400 mr-2"></i>
+                    <span>{{ course.average_rating|floatformat:1 }} ({{ course.reviews.count }} reviews)</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-users mr-2"></i>
+                    <span>{{ course.enrollment_count }} students</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-user mr-2"></i>
+                    <span>{{ course.instructor.get_full_name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Description -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">About This Course</h2>
+                    <p class="text-gray-600 dark:text-gray-400">{{ course.description }}</p>
+                </div>
+
+                <!-- Curriculum -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Curriculum</h2>
+                    <div class="space-y-2">
+                        {% for lesson in lessons %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-play-circle text-primary-600"></i>
+                                    <span class="text-gray-900 dark:text-white">{{ lesson.title }}</span>
+                                </div>
+                                <span class="text-sm text-gray-500">{{ lesson.duration }} min</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Student Reviews</h2>
+                    {% for review in reviews %}
+                        <div class="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-semibold text-gray-900 dark:text-white">{{ review.student.get_full_name }}</span>
+                                <div class="flex items-center text-yellow-500">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star{% if forloop.counter > review.rating %}-o{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400">{{ review.comment }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-500">No reviews yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 sticky top-4">
+                    <div class="text-3xl font-bold text-primary-600 mb-4">
+                        {% if course.is_free %}Free{% else %}\${{ course.price }}{% endif %}
+                    </div>
+                    
+                    {% if is_enrolled %}
+                        <a href="{% url 'lesson_detail' course.slug lessons.first.id %}" class="btn-primary w-full mb-4">
+                            <i class="fas fa-play mr-2"></i>Continue Learning
+                        </a>
+                    {% else %}
+                        <form method="POST" action="{% url 'enroll_course' course.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary w-full mb-4">
+                                <i class="fas fa-shopping-cart mr-2"></i>Enroll Now
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                        <div class="flex items-center">
+                            <i class="fas fa-book w-6"></i>
+                            <span>{{ lessons.count }} lessons</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-clock w-6"></i>
+                            <span>{{ course.duration }} hours</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-certificate w-6"></i>
+                            <span>Certificate of completion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
