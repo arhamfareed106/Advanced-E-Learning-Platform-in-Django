@@ -33,7 +33,7 @@ class UserAdmin(BaseUserAdmin):
 class ProfileAdmin(admin.ModelAdmin):
     """Profile admin."""
     
-    list_display = ['user', 'phone', 'location', 'created_at']
+    list_display = ['user', 'location', 'created_at']
     search_fields = ['user__username', 'user__email', 'phone']
     list_filter = ['created_at']
     ordering = ['-created_at']

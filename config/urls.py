@@ -25,6 +25,9 @@ urlpatterns = [
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
     
+    # Allauth URLs
+    path('accounts/', include('allauth.urls')),
+    
     # Template views
     path('auth/', include('apps.users.template_urls')),
     path('courses/', include('apps.courses.template_urls')),

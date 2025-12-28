@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.linkedin',
+    'allauth.socialaccount.providers.linkedin_oauth2',
     'allauth.socialaccount.providers.facebook',
     'two_factor',
     'two_factor.plugins.phonenumber',  # For SMS 2FA
@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
