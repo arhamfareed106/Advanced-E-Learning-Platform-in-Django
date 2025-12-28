@@ -70,7 +70,6 @@ def signup_view(request):
         
         # Create user
         user = User.objects.create_user(
-            username=email,  # Use email as username since we're using email as the main identifier
             email=email,
             password=password,
             first_name=first_name,
