@@ -3,7 +3,7 @@ User models for the e-learning platform.
 Includes custom User model with roles and Profile model.
 """
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.core.validators import URLValidator
 import uuid
@@ -14,6 +14,9 @@ class User(AbstractUser):
     Custom User model with role-based access control.
     Roles: student, instructor, admin
     """
+    
+    USERNAME_FIELD = 'email'  # Use email instead of username for authentication
+    REQUIRED_FIELDS = ['first_name', 'last_name']  # Required fields besides email and password
     
     ROLE_CHOICES = [
         ('student', 'Student'),
@@ -44,7 +47,7 @@ class User(AbstractUser):
         ]
     
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        return f"{self.email} ({self.get_role_display()})"
     
     @property
     def is_student(self):
