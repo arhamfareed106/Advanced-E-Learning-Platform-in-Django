@@ -49,6 +49,12 @@ INSTALLED_APPS = [
     'apps.payments',
     'apps.notifications',
     'apps.reviews',
+    'apps.gamification',
+    'apps.interactive',
+    'apps.social',
+    'apps.personalization',
+    'apps.accessibility',
+    'apps.analytics',
 ]
 
 MIDDLEWARE = [
