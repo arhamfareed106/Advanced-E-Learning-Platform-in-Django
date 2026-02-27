@@ -24,6 +24,12 @@ urlpatterns = [
     path('api/payments/', include('apps.payments.urls')),
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/reviews/', include('apps.reviews.urls')),
+    path('api/gamification/', include('apps.gamification.urls')),
+    path('api/interactive/', include('apps.interactive.urls')),
+    path('api/social/', include('apps.social.urls')),
+    path('api/personalization/', include('apps.personalization.urls')),
+    path('api/accessibility/', include('apps.accessibility.urls')),
+    path('api/analytics/', include('apps.analytics.urls')),
     
     # Allauth URLs
     path('accounts/', include('allauth.urls')),

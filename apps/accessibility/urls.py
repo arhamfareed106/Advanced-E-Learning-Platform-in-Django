@@ -1,23 +1,26 @@
+"""
+URL patterns for accessibility app API.
+"""
+
 from django.urls import path
-from . import views
+from .views import (
+    AccessibilityPreferenceDetailView, WCAGComplianceListView,
+    WCAGComplianceDetailView, AccessibilityFeedbackListCreateView,
+    AccessibilityFeedbackDetailView, AccessibilityFeatureListView,
+    submit_accessibility_feedback, get_user_accessibility_profile,
+    get_wcag_compliance_summary
+)
+
+app_name = 'accessibility'
 
 urlpatterns = [
-    # Accessibility Preferences URLs
-    path('preferences/', views.AccessibilityPreferenceDetailView.as_view(), name='accessibility-preferences'),
-    
-    # WCAG Compliance URLs
-    path('wcag-compliance/', views.WCAGComplianceListView.as_view(), name='wcag-compliance-list'),
-    path('wcag-compliance/<uuid:pk>/', views.WCAGComplianceDetailView.as_view(), name='wcag-compliance-detail'),
-    path('wcag-compliance/summary/', views.get_wcag_compliance_summary, name='wcag-compliance-summary'),
-    
-    # Accessibility Feedback URLs
-    path('feedback/', views.AccessibilityFeedbackListCreateView.as_view(), name='accessibility-feedback-list-create'),
-    path('feedback/<uuid:pk>/', views.AccessibilityFeedbackDetailView.as_view(), name='accessibility-feedback-detail'),
-    path('feedback/submit/', views.submit_accessibility_feedback, name='submit-accessibility-feedback'),
-    
-    # Accessibility Features URLs
-    path('features/', views.AccessibilityFeatureListView.as_view(), name='accessibility-features'),
-    
-    # User Accessibility Profile
-    path('profile/', views.get_user_accessibility_profile, name='user-accessibility-profile'),
+    path('preferences/', AccessibilityPreferenceDetailView.as_view(), name='accessibility_preference'),
+    path('wcag-compliance/', WCAGComplianceListView.as_view(), name='wcag_compliance_list'),
+    path('wcag-compliance/<uuid:pk>/', WCAGComplianceDetailView.as_view(), name='wcag_compliance_detail'),
+    path('feedback/', AccessibilityFeedbackListCreateView.as_view(), name='accessibility_feedback_list'),
+    path('feedback/<uuid:pk>/', AccessibilityFeedbackDetailView.as_view(), name='accessibility_feedback_detail'),
+    path('features/', AccessibilityFeatureListView.as_view(), name='accessibility_feature_list'),
+    path('feedback/submit/', submit_accessibility_feedback, name='submit_accessibility_feedback'),
+    path('profile/', get_user_accessibility_profile, name='get_user_accessibility_profile'),
+    path('wcag-summary/', get_wcag_compliance_summary, name='get_wcag_compliance_summary'),
 ]

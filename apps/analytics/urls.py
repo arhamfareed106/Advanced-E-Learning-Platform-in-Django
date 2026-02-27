@@ -1,24 +1,27 @@
+"""
+URL patterns for analytics app API.
+"""
+
 from django.urls import path
-from . import views
+from .views import (
+    AnalyticsReportListCreateView, AnalyticsReportDetailView,
+    UserBehaviorTrackingListCreateView, LearningAnalyticsListView,
+    LearningAnalyticsDetailView, DashboardWidgetListCreateView,
+    DashboardWidgetDetailView, track_user_behavior,
+    get_user_analytics_summary, get_platform_analytics
+)
+
+app_name = 'analytics'
 
 urlpatterns = [
-    # Analytics Reports URLs
-    path('reports/', views.AnalyticsReportListCreateView.as_view(), name='analytics-report-list-create'),
-    path('reports/<uuid:pk>/', views.AnalyticsReportDetailView.as_view(), name='analytics-report-detail'),
-    
-    # User Behavior Tracking URLs
-    path('behavior/', views.UserBehaviorTrackingListCreateView.as_view(), name='user-behavior-list-create'),
-    path('behavior/track/', views.track_user_behavior, name='track-user-behavior'),
-    
-    # Learning Analytics URLs
-    path('learning/', views.LearningAnalyticsListView.as_view(), name='learning-analytics-list'),
-    path('learning/<uuid:pk>/', views.LearningAnalyticsDetailView.as_view(), name='learning-analytics-detail'),
-    
-    # Dashboard Widgets URLs
-    path('widgets/', views.DashboardWidgetListCreateView.as_view(), name='dashboard-widget-list-create'),
-    path('widgets/<uuid:pk>/', views.DashboardWidgetDetailView.as_view(), name='dashboard-widget-detail'),
-    
-    # Analytics Summary URLs
-    path('summary/', views.get_user_analytics_summary, name='user-analytics-summary'),
-    path('platform/', views.get_platform_analytics, name='platform-analytics'),
+    path('reports/', AnalyticsReportListCreateView.as_view(), name='analytics_report_list'),
+    path('reports/<uuid:pk>/', AnalyticsReportDetailView.as_view(), name='analytics_report_detail'),
+    path('behavior/', UserBehaviorTrackingListCreateView.as_view(), name='user_behavior_list'),
+    path('behavior/track/', track_user_behavior, name='track_user_behavior'),
+    path('learning/', LearningAnalyticsListView.as_view(), name='learning_analytics_list'),
+    path('learning/<uuid:pk>/', LearningAnalyticsDetailView.as_view(), name='learning_analytics_detail'),
+    path('widgets/', DashboardWidgetListCreateView.as_view(), name='dashboard_widget_list'),
+    path('widgets/<uuid:pk>/', DashboardWidgetDetailView.as_view(), name='dashboard_widget_detail'),
+    path('summary/', get_user_analytics_summary, name='get_user_analytics_summary'),
+    path('platform/', get_platform_analytics, name='get_platform_analytics'),
 ]

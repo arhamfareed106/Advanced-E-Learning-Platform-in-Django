@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Courses - EduLearn{% endblock %}
+
+{% block content %}
+<div class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold mb-4">Explore Our Courses</h1>
+        <p class="text-xl text-gray-300">Find the perfect course to advance your career</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Filters Sidebar -->
+        <div class="lg:w-64 space-y-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold">Filters</h3>
+                    <button onclick="clearFilters()" class="text-sm text-indigo-600 hover:text-indigo-700">Clear All</button>
+                </div>
+
+                <!-- Search -->
+                <form method="GET" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Search</label>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="search" value="{{ request.GET.search }}" 
+                                   placeholder="Search courses..."
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700">
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Category</label>
+                        <select name="category" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Difficulty -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Difficulty</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="difficulty" value="beginner" 
+                                       class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm">Beginner</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="difficulty" value="intermediate" 
+                                       class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm">Intermediate</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="difficulty" value="advanced" 
+                                       class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm">Advanced</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Price</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="free" value="1" 
+                                       class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm">Free</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="paid" value="1" 
+                                       class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm">Paid</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Course Grid -->
+        <div class="flex-1">
+            <!-- Results Header -->
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600 dark:text-gray-400">
+                    <span class="font-semibold">{{ courses.paginator.count }}</span> courses found
+                </p>
+                <select onchange="location.href='?sort='+this.value" 
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700">
+                    <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Newest</option>
+                    <option value="average_rating" {% if request.GET.sort == 'average_rating' %}selected{% endif %}>Highest Rated</option>
+                    <option value="enrollment_count" {% if request.GET.sort == 'enrollment_count' %}selected{% endif %}>Most Popular</option>
+                    <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price: Low to High</option>
+                </select>
+            </div>
+
+            <!-- Course Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for course in courses %}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition group">
+                        <div class="relative">
+                            {% if course.thumbnail %}
+                                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-full h-48 object-cover">
+                            {% else %}
+                                <div class="w-full h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                    <i class="fas fa-book text-6xl text-white opacity-50"></i>
+                                </div>
+                            {% endif %}
+                            {% if course.is_free %}
+                                <span class="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Free</span>
+                            {% endif %}
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">
+                                    {{ course.get_difficulty_display }}
+                                </span>
+                                <span class="ml-auto text-sm text-gray-500">
+                                    <i class="fas fa-clock mr-1"></i>{{ course.duration_hours }}h
+                                </span>
+                            </div>
+                            <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ course.title }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">{{ course.description|truncatewords:15 }}</p>
+                            
+                            <div class="flex items-center mb-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                    <span class="font-semibold">{{ course.average_rating }}</span>
+                                    <span class="text-gray-500 text-sm ml-1">({{ course.review_count }})</span>
+                                </div>
+                                <span class="mx-2 text-gray-300">•</span>
+                                <span class="text-sm text-gray-500">
+                                    <i class="fas fa-user-graduate mr-1"></i>{{ course.enrollment_count }} students
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center">
+                                    {% if course.instructor.profile.avatar %}
+                                        <img src="{{ course.instructor.profile.avatar.url }}" alt="{{ course.instructor.username }}" class="w-8 h-8 rounded-full">
+                                    {% else %}
+                                        <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-semibold">
+                                            {{ course.instructor.first_name|default:course.instructor.username|slice:":1"|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <span class="ml-2 text-sm">{{ course.instructor.get_full_name }}</span>
+                                </div>
+                                <span class="text-xl font-bold text-indigo-600">
+                                    {% if course.is_free %}
+                                        Free
+                                    {% else %}
+                                        ${{ course.price }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-xl text-gray-500 mb-4">No courses found</p>
+                        <a href="/courses/" class="text-indigo-600 hover:text-indigo-700">Clear all filters</a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if courses.has_other_pages %}
+                <div class="mt-8 flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        {% if courses.has_previous %}
+                            <a href="?page={{ courses.previous_page_number }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        {% endif %}
+
+                        {% for num in courses.paginator.page_range %}
+                            {% if courses.number == num %}
+                                <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg">{{ num }}</span>
+                            {% elif num > courses.number|add:'-3' and num < courses.number|add:'3' %}
+                                <a href="?page={{ num }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if courses.has_next %}
+                            <a href="?page={{ courses.next_page_number }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function clearFilters() {
+    window.location.href = '/courses/';
+}
+</script>
+{% endblock %}

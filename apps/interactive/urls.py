@@ -1,28 +1,33 @@
+"""
+URL patterns for interactive app API.
+"""
+
 from django.urls import path
-from . import views
+from .views import (
+    CodeEditorListCreateView, CodeEditorDetailView,
+    FlashcardListCreateView, FlashcardDetailView,
+    FlashcardDeckListCreateView, FlashcardDeckDetailView,
+    WhiteboardListCreateView, WhiteboardDetailView,
+    InteractiveSessionListCreateView, InteractiveSessionDetailView,
+    create_code_editor_snapshot, run_code, get_deck_cards,
+    update_whiteboard_data
+)
+
+app_name = 'interactive'
 
 urlpatterns = [
-    # Code Editor URLs
-    path('code-editors/', views.CodeEditorListCreateView.as_view(), name='code-editor-list-create'),
-    path('code-editors/<uuid:pk>/', views.CodeEditorDetailView.as_view(), name='code-editor-detail'),
-    path('code-editors/<uuid:pk>/snapshot/', views.create_code_editor_snapshot, name='code-editor-snapshot'),
-    path('code-editors/<uuid:pk>/run/', views.run_code, name='run-code'),
-    
-    # Flashcard URLs
-    path('flashcards/', views.FlashcardListCreateView.as_view(), name='flashcard-list-create'),
-    path('flashcards/<uuid:pk>/', views.FlashcardDetailView.as_view(), name='flashcard-detail'),
-    
-    # Flashcard Deck URLs
-    path('flashcard-decks/', views.FlashcardDeckListCreateView.as_view(), name='flashcard-deck-list-create'),
-    path('flashcard-decks/<uuid:pk>/', views.FlashcardDeckDetailView.as_view(), name='flashcard-deck-detail'),
-    path('flashcard-decks/<uuid:deck_id>/cards/', views.get_deck_cards, name='deck-cards'),
-    
-    # Whiteboard URLs
-    path('whiteboards/', views.WhiteboardListCreateView.as_view(), name='whiteboard-list-create'),
-    path('whiteboards/<uuid:pk>/', views.WhiteboardDetailView.as_view(), name='whiteboard-detail'),
-    path('whiteboards/<uuid:whiteboard_id>/update/', views.update_whiteboard_data, name='update-whiteboard'),
-    
-    # Interactive Session URLs
-    path('sessions/', views.InteractiveSessionListCreateView.as_view(), name='interactive-session-list-create'),
-    path('sessions/<uuid:pk>/', views.InteractiveSessionDetailView.as_view(), name='interactive-session-detail'),
+    path('code-editor/', CodeEditorListCreateView.as_view(), name='code_editor_list'),
+    path('code-editor/<uuid:pk>/', CodeEditorDetailView.as_view(), name='code_editor_detail'),
+    path('flashcards/', FlashcardListCreateView.as_view(), name='flashcard_list'),
+    path('flashcards/<uuid:pk>/', FlashcardDetailView.as_view(), name='flashcard_detail'),
+    path('flashcard-decks/', FlashcardDeckListCreateView.as_view(), name='flashcard_deck_list'),
+    path('flashcard-decks/<uuid:pk>/', FlashcardDeckDetailView.as_view(), name='flashcard_deck_detail'),
+    path('whiteboards/', WhiteboardListCreateView.as_view(), name='whiteboard_list'),
+    path('whiteboards/<uuid:pk>/', WhiteboardDetailView.as_view(), name='whiteboard_detail'),
+    path('sessions/', InteractiveSessionListCreateView.as_view(), name='interactive_session_list'),
+    path('sessions/<uuid:pk>/', InteractiveSessionDetailView.as_view(), name='interactive_session_detail'),
+    path('code-editor/snapshot/', create_code_editor_snapshot, name='code_editor_snapshot'),
+    path('code-editor/run/', run_code, name='code_editor_run'),
+    path('flashcard-decks/<uuid:deck_id>/cards/', get_deck_cards, name='get_deck_cards'),
+    path('whiteboards/<uuid:whiteboard_id>/update/', update_whiteboard_data, name='update_whiteboard_data'),
 ]
