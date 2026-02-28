@@ -92,12 +92,12 @@
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <i class="fas fa-check-circle text-3xl text-green-600 mb-3"></i>
-            <p class="text-2xl font-bold">{{ enrollments.filter.is_completed.count|default:0 }}</p>
+            <p class="text-2xl font-bold">{{ completed_count|default:0 }}</p>
             <p class="text-gray-500">Completed</p>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
             <i class="fas fa-clock text-3xl text-yellow-600 mb-3"></i>
-            <p class="text-2xl font-bold">{{ enrollments.filter.is_completed=False.count|default:0 }}</p>
+            <p class="text-2xl font-bold">{{ in_progress_count|default:0 }}</p>
             <p class="text-gray-500">In Progress</p>
         </div>
     </div>

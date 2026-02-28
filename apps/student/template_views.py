@@ -5,9 +5,9 @@ Template views for student dashboard.
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
+from django.db import OperationalError
 from apps.enrollment.models import Enrollment, LessonProgress
 from apps.certificates.models import Certificate
-from apps.gamification.models import UserBadge, Leaderboard, LearningStreak, PointsTransaction
 from apps.courses.models import Course
 
 
@@ -20,43 +20,59 @@ def dashboard_view(request):
     # Get certificates
     certificates = Certificate.objects.filter(student=request.user)[:3]
     
-    # Get badges
-    badges = UserBadge.objects.filter(user=request.user).select_related('badge')[:6]
-    
-    # Get leaderboard entry
+    # Get badges (handle missing table)
     try:
-        leaderboard = Leaderboard.objects.get(user=request.user)
-        level = leaderboard.level
-        points = leaderboard.points
-        rank = leaderboard.rank
-    except Leaderboard.DoesNotExist:
+        from apps.gamification.models import UserBadge, Leaderboard, LearningStreak
+        badges = UserBadge.objects.filter(user=request.user).select_related('badge')[:6]
+        
+        # Get leaderboard entry
+        try:
+            leaderboard = Leaderboard.objects.get(user=request.user)
+            level = leaderboard.level
+            points = leaderboard.points
+            rank = leaderboard.rank
+        except (Leaderboard.DoesNotExist, OperationalError):
+            level = 1
+            points = 0
+            rank = 0
+        
+        # Get learning streak
+        try:
+            streak = LearningStreak.objects.get(user=request.user)
+            streak_count = streak.current_streak
+        except (LearningStreak.DoesNotExist, OperationalError):
+            streak_count = 0
+        
+        # Get total points from transactions
+        try:
+            from apps.gamification.models import PointsTransaction
+            total_points = PointsTransaction.objects.filter(
+                user=request.user
+            ).aggregate(total=Sum('points'))['total'] or 0
+        except OperationalError:
+            total_points = 0
+    except (ImportError, OperationalError):
+        badges = []
         level = 1
         points = 0
         rank = 0
-    
-    # Get learning streak
-    try:
-        streak = LearningStreak.objects.get(user=request.user)
-        streak_count = streak.current_streak
-    except LearningStreak.DoesNotExist:
         streak_count = 0
+        total_points = 0
     
     # Calculate learning hours
-    total_seconds = LessonProgress.objects.filter(
-        enrollment__student=request.user
-    ).aggregate(total=Sum('watch_time_seconds'))['total'] or 0
-    learning_hours = int(total_seconds / 3600)
-    
-    # Get total points from transactions
-    total_points = PointsTransaction.objects.filter(
-        user=request.user
-    ).aggregate(total=Sum('points'))['total'] or 0
+    try:
+        total_seconds = LessonProgress.objects.filter(
+            enrollment__student=request.user
+        ).aggregate(total=Sum('watch_time_seconds'))['total'] or 0
+        learning_hours = int(total_seconds / 3600)
+    except OperationalError:
+        learning_hours = 0
     
     context = {
         'recent_enrollments': enrollments,
         'certificates_count': certificates.count(),
         'enrollments_count': enrollments.count(),
-        'badges_count': badges.count(),
+        'badges_count': len(badges) if isinstance(badges, list) else badges.count(),
         'recent_badges': badges,
         'level': level,
         'points': points,
@@ -105,22 +121,30 @@ def certificates_view(request):
 @login_required
 def achievements_view(request):
     """Student's achievements page."""
-    badges = UserBadge.objects.filter(user=request.user).select_related('badge')
-    
-    # Get leaderboard entry
+    # Get badges (handle missing table)
     try:
-        leaderboard = Leaderboard.objects.get(user=request.user)
-        level = leaderboard.level
-        total_points = leaderboard.points
-    except Leaderboard.DoesNotExist:
+        from apps.gamification.models import UserBadge, Leaderboard, LearningStreak
+        badges = UserBadge.objects.filter(user=request.user).select_related('badge')
+        
+        # Get leaderboard entry
+        try:
+            leaderboard = Leaderboard.objects.get(user=request.user)
+            level = leaderboard.level
+            total_points = leaderboard.points
+        except (Leaderboard.DoesNotExist, OperationalError):
+            level = 1
+            total_points = 0
+        
+        # Get learning streak
+        try:
+            streak = LearningStreak.objects.get(user=request.user)
+            current_streak = streak.current_streak
+        except (LearningStreak.DoesNotExist, OperationalError):
+            current_streak = 0
+    except (ImportError, OperationalError):
+        badges = []
         level = 1
         total_points = 0
-    
-    # Get learning streak
-    try:
-        streak = LearningStreak.objects.get(user=request.user)
-        current_streak = streak.current_streak
-    except LearningStreak.DoesNotExist:
         current_streak = 0
     
     context = {

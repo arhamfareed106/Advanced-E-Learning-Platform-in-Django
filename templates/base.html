@@ -171,6 +171,15 @@
                                 <a href="/student/achievements/" class="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <i class="fas fa-trophy mr-2"></i>Achievements
                                 </a>
+                                {% if user.is_staff %}
+                                <hr class="border-gray-200 dark:border-gray-700">
+                                <a href="/admin-dashboard/" class="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <i class="fas fa-user-shield mr-2"></i>Admin Dashboard
+                                </a>
+                                <a href="/admin/" class="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <i class="fas fa-cog mr-2"></i>Full Admin
+                                </a>
+                                {% endif %}
                                 <hr class="border-gray-200 dark:border-gray-700">
                                 <a href="/accounts/logout/" class="block px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-red-600">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
