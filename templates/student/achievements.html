@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}My Achievements - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">My Achievements</h1>
+        <p class="text-gray-600 dark:text-gray-400">Your badges and accomplishments</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-trophy text-3xl text-yellow-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ badges.count }}</p>
+            <p class="text-gray-500">Badges Earned</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-star text-3xl text-indigo-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ total_points|default:0 }}</p>
+            <p class="text-gray-500">Total Points</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-fire text-3xl text-red-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ current_streak|default:0 }}</p>
+            <p class="text-gray-500">Day Streak</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-chart-line text-3xl text-green-600 mb-3"></i>
+            <p class="text-2xl font-bold">Level {{ level|default:1 }}</p>
+            <p class="text-gray-500">Current Level</p>
+        </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Earned Badges</h2>
+        
+        {% if badges %}
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for user_badge in badges %}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition">
+                        <div class="w-20 h-20 mx-auto bg-{{ user_badge.badge.color }}-100 dark:bg-{{ user_badge.badge.color }}-900 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas {{ user_badge.badge.icon }} text-3xl text-{{ user_badge.badge.color }}-600"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">{{ user_badge.badge.name }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            {{ user_badge.badge.description }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-calendar mr-1"></i>
+                            Earned {{ user_badge.earned_at|date:"M d, Y" }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
+                <i class="fas fa-medal text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No badges yet</h3>
+                <p class="text-gray-500">Complete courses and activities to earn badges</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Available Badges Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Badges to Unlock</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- First Course Badge -->
+            <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 text-center opacity-60">
+                <div class="w-20 h-20 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-graduation-cap text-3xl text-gray-500"></i>
+                </div>
+                <h3 class="font-bold mb-2">First Steps</h3>
+                <p class="text-sm text-gray-500">Complete your first course</p>
+            </div>
+
+            <!-- Quiz Master Badge -->
+            <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 text-center opacity-60">
+                <div class="w-20 h-20 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-brain text-3xl text-gray-500"></i>
+                </div>
+                <h3 class="font-bold mb-2">Quiz Master</h3>
+                <p class="text-sm text-gray-500">Pass 10 quizzes</p>
+            </div>
+
+            <!-- Fast Learner Badge -->
+            <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 text-center opacity-60">
+                <div class="w-20 h-20 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-bolt text-3xl text-gray-500"></i>
+                </div>
+                <h3 class="font-bold mb-2">Fast Learner</h3>
+                <p class="text-sm text-gray-500">Complete 5 lessons in a day</p>
+            </div>
+
+            <!-- Dedicated Badge -->
+            <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 text-center opacity-60">
+                <div class="w-20 h-20 mx-auto bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-fire-alt text-3xl text-gray-500"></i>
+                </div>
+                <h3 class="font-bold mb-2">Dedicated</h3>
+                <p class="text-sm text-gray-500">7-day learning streak</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div>
+        <h2 class="text-2xl font-bold mb-4">Recent Activity</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-check text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Completed a lesson</p>
+                        <p class="text-sm text-gray-500">Keep up the great work!</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-star text-blue-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Earned points</p>
+                        <p class="text-sm text-gray-500">+50 points for course completion</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-trophy text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold">Badge earned</p>
+                        <p class="text-sm text-gray-500">You earned a new badge!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

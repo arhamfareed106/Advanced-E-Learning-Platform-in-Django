@@ -14,7 +14,7 @@
                 </a>
                 <h2 class="text-3xl font-bold mt-6">Sign in to your account</h2>
                 <p class="text-gray-600 dark:text-gray-400 mt-2">
-                    Or <a href="{% url 'users:register' %}" class="text-indigo-600 hover:text-indigo-700">create a new account</a>
+                    Or <a href="/auth/signup/" class="text-indigo-600 hover:text-indigo-700">create a new account</a>
                 </p>
             </div>
 
@@ -42,7 +42,7 @@
                                class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         <label for="remember" class="ml-2 text-sm">Remember me</label>
                     </div>
-                    <a href="{% url 'password_reset' %}" class="text-sm text-indigo-600 hover:text-indigo-700">
+                    <a href="/accounts/password/reset/" class="text-sm text-indigo-600 hover:text-indigo-700">
                         Forgot password?
                     </a>
                 </div>

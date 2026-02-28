@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}My Courses - EduLearn{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">My Courses</h1>
+        <p class="text-gray-600 dark:text-gray-400">Track your learning progress</p>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {% for enrollment in enrollments %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                <div class="flex">
+                    <!-- Course Thumbnail -->
+                    <div class="w-1/3">
+                        {% if enrollment.course.thumbnail %}
+                            <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                <i class="fas fa-book text-4xl text-white opacity-50"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Course Info -->
+                    <div class="w-2/3 p-4">
+                        <div class="flex items-center mb-2">
+                            <span class="text-xs font-semibold text-indigo-600 bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">
+                                {{ enrollment.course.get_difficulty_display }}
+                            </span>
+                            {% if enrollment.course.is_free %}
+                                <span class="ml-2 text-xs font-semibold text-green-600 bg-green-100 dark:bg-green-900 px-2 py-1 rounded">
+                                    Free
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ enrollment.course.title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            {{ enrollment.course.instructor.get_full_name }}
+                        </p>
+
+                        <!-- Progress -->
+                        <div class="mb-3">
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span>Progress</span>
+                                <span class="font-semibold">{{ enrollment.progress_percentage|floatformat:0 }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                                <div class="bg-indigo-600 h-2 rounded-full transition-all" 
+                                     style="width: {{ enrollment.progress_percentage }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-clock mr-1"></i>{{ enrollment.course.duration_hours }}h</span>
+                            <span><i class="fas fa-book mr-1"></i>{{ enrollment.course.total_lessons }} lessons</span>
+                            <span><i class="fas fa-star mr-1"></i>{{ enrollment.course.average_rating }}</span>
+                        </div>
+
+                        <!-- Continue Button -->
+                        <a href="/courses/{{ enrollment.course.slug }}/" 
+                           class="mt-3 block w-full text-center py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">
+                            Continue Learning
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-book text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No courses yet</h3>
+                <p class="text-gray-500 mb-6">You haven't enrolled in any courses</p>
+                <a href="/courses/" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                    Browse Courses
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-book text-3xl text-indigo-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ enrollments.count }}</p>
+            <p class="text-gray-500">Total Courses</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-check-circle text-3xl text-green-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ enrollments.filter.is_completed.count|default:0 }}</p>
+            <p class="text-gray-500">Completed</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+            <i class="fas fa-clock text-3xl text-yellow-600 mb-3"></i>
+            <p class="text-2xl font-bold">{{ enrollments.filter.is_completed=False.count|default:0 }}</p>
+            <p class="text-gray-500">In Progress</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

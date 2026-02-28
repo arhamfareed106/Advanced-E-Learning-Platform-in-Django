@@ -37,9 +37,9 @@ urlpatterns = [
     # Template views
     path('auth/', include('apps.users.template_urls')),
     path('courses/', include('apps.courses.template_urls')),
-    path('student/', include('apps.enrollment.template_urls')),
-    # path('instructor/', include('apps.courses.instructor_urls')),
-    # path('certificates/', include('apps.certificates.template_urls')),
+    path('student/', include('apps.student.template_urls')),
+    path('instructor/', TemplateView.as_view(template_name='landing/index.html'), name='instructor_dashboard'),
+    path('admin-dashboard/', include('apps.users.admin_urls')),
 ]
 
 # Serve media files in development
